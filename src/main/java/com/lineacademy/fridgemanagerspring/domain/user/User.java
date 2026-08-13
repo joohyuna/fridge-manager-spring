@@ -1,5 +1,6 @@
 package com.lineacademy.fridgemanagerspring.domain.user;
 
+import com.lineacademy.fridgemanagerspring.domain.category.Category;
 import com.lineacademy.fridgemanagerspring.domain.common.BaseTimeEntity;
 import com.lineacademy.fridgemanagerspring.domain.enums.RoleType;
 import com.lineacademy.fridgemanagerspring.domain.fridge.Fridge;
@@ -16,6 +17,7 @@ import java.util.List;
 @Entity // DB 테이블과 매핑되는 JPA 엔티티 클래스임을 선언
 @Table(name = "user") // 매핑될 DB 테이블 이름을 "user"로 지정
 @Getter
+// 어노테이션 @Setter 는 사용 하지 않는다
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 // @NoArgsContructor()라고만 쓰면 기본 생성자 만들어주는 어노테이션
 // 기본 생성자에 접근제한자를 protected로 만들어달라
@@ -49,18 +51,21 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Fridge> fridges = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Category> categories = new ArrayList<>();
+
     @Builder
     private User(String nickname, String password, String email, LocalDateTime birthdate, RoleType role) {
         this.nickname = nickname;
         this.password = password;
         this.email = email;
         this.birthdate = birthdate;
-        if (role != null) this.role = role;
+        if (role != null) this.role = role; // role은 enum 타입이라서
     }
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
-    }
+    }  // setter 을 update로 넣고 사용
 
     public void updateBirthdate(LocalDateTime birthdate) {
         this.birthdate = birthdate;

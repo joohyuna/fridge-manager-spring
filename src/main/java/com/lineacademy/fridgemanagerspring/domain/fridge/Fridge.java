@@ -8,9 +8,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+// 3개는 기본
 @Entity
 @Table(name = "fridge")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
+
 public class Fridge extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
