@@ -5,6 +5,7 @@ import com.lineacademy.fridgemanagerspring.domain.common.BaseTimeEntity;
 import com.lineacademy.fridgemanagerspring.domain.enums.RoleType;
 import com.lineacademy.fridgemanagerspring.domain.fridge.Fridge;
 import com.lineacademy.fridgemanagerspring.domain.inquiry.Inquiry;
+import com.lineacademy.fridgemanagerspring.domain.shoppinglist.ShoppingList;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,7 +46,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private RoleType role = RoleType.USER;
 
-    // TODO: 다른 테이블과의 관계를 기록해줘야 함
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ShoppingList> shoppingLists = new ArrayList<>();
 
     // mappedBy = "user" 는 Fridge 엔티티에 만들어질 user 필드명
     // cascade는, 연결지은 이 user가 삭제될 경우 연결될 fridge는 어떻게 할까?
