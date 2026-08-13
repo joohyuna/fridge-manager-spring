@@ -2,6 +2,7 @@ package com.lineacademy.fridgemanagerspring.controller;
 
 
 import com.lineacademy.fridgemanagerspring.domain.user.User;
+import com.lineacademy.fridgemanagerspring.dto.user.LoginRequest;
 import com.lineacademy.fridgemanagerspring.dto.user.request.CreateUserRequest;
 import com.lineacademy.fridgemanagerspring.dto.user.response.UserResponse;
 import com.lineacademy.fridgemanagerspring.service.UserService;
@@ -64,5 +65,19 @@ public class UserController {
                     ));
 
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(
+            @Valid @RequestBody LoginRequest request
+    ) {
+       try {
+           // 1. 사용자가 입력해온 값을 DB에서 조회에서 있는 확인
+           User user = userService.login(request);
+
+           //2. 토큰생성 해서 response 전달
+       } catch () {
+
+       }
     }
 }
