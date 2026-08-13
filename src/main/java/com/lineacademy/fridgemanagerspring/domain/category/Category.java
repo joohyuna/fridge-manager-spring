@@ -1,12 +1,16 @@
 package com.lineacademy.fridgemanagerspring.domain.category;
 
 import com.lineacademy.fridgemanagerspring.domain.common.BaseTimeEntity;
+import com.lineacademy.fridgemanagerspring.domain.product.Product;
 import com.lineacademy.fridgemanagerspring.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,7 +37,8 @@ public class Category extends BaseTimeEntity {
     private Boolean isDefault;
 
 
-    // TODO: Product 테이블과의 관계 설정
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private List<Product> products = new ArrayList<>();
 
 
     @ManyToOne(fetch = FetchType.LAZY)
