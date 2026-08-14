@@ -2,8 +2,9 @@ package com.lineacademy.fridgemanagerspring.service;
 
 import com.lineacademy.fridgemanagerspring.domain.fridge.Fridge;
 import com.lineacademy.fridgemanagerspring.domain.user.User;
-import com.lineacademy.fridgemanagerspring.dto.user.LoginRequest;
+import com.lineacademy.fridgemanagerspring.dto.user.request.LoginRequest;
 import com.lineacademy.fridgemanagerspring.dto.user.request.CreateUserRequest;
+import com.lineacademy.fridgemanagerspring.dto.user.request.UpdateUserRequest;
 import com.lineacademy.fridgemanagerspring.repository.FridgeRepository;
 import com.lineacademy.fridgemanagerspring.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -50,6 +51,7 @@ public class UserService {
 
         // 사용자 정보를 데이터 베이스 저장
         // 1. 사용자 저장
+        // user 변수에 저장된 객체는 repository
         User user = User.builder()
                 .nickname(request.getNickname())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -68,6 +70,7 @@ public class UserService {
         return user;
     }
 
+    @Transactional
     public User login(LoginRequest request) {
         // 1. 받아오느 email값을 통해 사용자가 있는 확인하고
         // 함수처럼 만들어서 쓸수 있는게 Java에서 지원되지만 함수는 아니고
@@ -87,4 +90,36 @@ public class UserService {
 
         return user;
     }
+
+    @Transactional
+    public User updateUser(Long currentUserId, @Valid UpdateUserRequest request) {
+        // 1. 사용자가 존재하는 지
+        // 여기 user 변수에 저장이 된 User Entity 객체는
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
+
+        // 2. 탈퇴는 하지 않았는지
+        if (user.getDeletedAt() != null) {
+            throw new RuntimeException("USER_NOT_FOUND");
+        }
+
+        // 3. 변경하려는 닉네임이 겹치지 않는지
+        if (request.getNickname() != null) {
+            if (userRepository.existsByNicknameAndIdNot(request.getNickname(), currentUserId)) {
+                throw new RuntimeException("DUPLICATED_NICKNAME");
+            }
+            user.updateNickname(request.getNickname());
+        }
+        // 4. birth
+        if (request.getNickname() != null && !request.getBirthdate().isBlank()) {
+            LocalDate parsedBirthdate = LocalDate.parse(request.getBirthdate(), DateTimeFormatter.ISO_DATE);
+            user.updateBirthdate(parsedBirthdate); // 변수의 값을 변경
+        }
+
+        //  디비에 쓰지 않고, 리턴으로 끝났음
+        return user;
+        // repository에서 가져온 내용을 할당된 user객체의 값이 변경된 상태에서 메서드 실행이 끝나면
+        // 자동으로 디비믜 값도 업데이트 함 => Dirty Check
+    }
+
 }
