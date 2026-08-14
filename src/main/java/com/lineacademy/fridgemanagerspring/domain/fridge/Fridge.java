@@ -7,6 +7,7 @@ import com.lineacademy.fridgemanagerspring.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -15,9 +16,8 @@ import java.util.List;
 // 3개는 기본
 @Entity
 @Table(name = "fridge")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-
-
 public class Fridge extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

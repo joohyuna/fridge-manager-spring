@@ -6,12 +6,14 @@ import com.lineacademy.fridgemanagerspring.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "shopping_list")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShoppingList  extends BaseTimeEntity {
 
