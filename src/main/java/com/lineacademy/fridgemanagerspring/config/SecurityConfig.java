@@ -34,8 +34,8 @@ public class SecurityConfig {
                         "/users/login",
                         "/users/password-reset",
                         "/notice/**"
-                ).permitAll()   //지금 여기에 등록된 주소를 토큰이 없어도 허용
-                .anyRequest().authenticated()
+                ).permitAll()   //지금 여기에 등록된 주소를 토큰이 없어도 허용하겠다
+                .anyRequest().authenticated()  // 이 외의 모든 요청들은 인증 필요
                 )
                 // 이러한 처리 맨 앞단에 여기에 추가한 필요를 붙임
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
