@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor  //매개변수를 생성하는 어노테이션
 public class UserService {
     private final UserRepository userRepository;
     private final FridgeRepository fridgeRepository;
@@ -32,12 +32,12 @@ public class UserService {
 
         // 이러한 구조에서 데이터베이스 등의 저장소에 접근하는 기능 모믐 클래스를 "레포지토리( repository)"라고 함
 
-       // 이메일 중복 체크
+       // 이메일 중복 체크 => 이에일로 검색 이것은 만들어줘야 함
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new IllegalArgumentException("ALREADY_EXISTS_EMAIL");
         }
 
-        // 닉네임 중복 체므
+        // 닉네임 중복 체크 => 닉네임으로 정보
         if (userRepository.existsByNickname(request.getNickname())) {
             throw new IllegalArgumentException("ALREADY_EXISTS_NICKNAME");
         }
@@ -69,15 +69,18 @@ public class UserService {
     }
 
     public User login(LoginRequest request) {
+        // 1. 받아오느 email값을 통해 사용자가 있는 확인하고
         // 함수처럼 만들어서 쓸수 있는게 Java에서 지원되지만 함수는 아니고
         // 람다 표현식() ->
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("INVALID_CREDENTIALS"));
 
+        // 2. 사용자가 존재한다면, 탈퇴된 회원인지를 검사하고
         if (user.getCreatedAt() != null) {
             throw new RuntimeException("INVALID_CREDENTIALS");
         }
 
+        // 3. 비밇번호가 일치하는데 확인하고
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException(("INVALID_CREDENTIALS"));
         }

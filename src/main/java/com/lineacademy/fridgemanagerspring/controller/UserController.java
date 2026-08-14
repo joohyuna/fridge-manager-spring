@@ -6,6 +6,7 @@ import com.lineacademy.fridgemanagerspring.dto.user.LoginRequest;
 import com.lineacademy.fridgemanagerspring.dto.user.request.CreateUserRequest;
 import com.lineacademy.fridgemanagerspring.dto.user.response.UserResponse;
 import com.lineacademy.fridgemanagerspring.service.UserService;
+import com.lineacademy.fridgemanagerspring.utils.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class UserController {
     // 맴버 변수
     private final UserService userService;  // Java 에서는 객체를 만들어야 실행을 할수 있다
+    private final JwtUtil jwtUtil; // Bean이기 때문에 새로 생성이 아니라 불러오는 것
 
 
 
@@ -34,8 +36,11 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> createUser(
             // Spring-Boot에서는 컨트롤러의 메서드를 실행할 때,
             // 자동으로 req.body값이 매개변수로 들어옴
+            // 내보내는 것 Java 자료 구조 그대로 내보내면 안됨
+            // 왜냐하면 response.body = 문자열이여갸 하기 때문
 
-            // @Valid는 이 매개변수에 대한 검증 절차를 실행할 것이고, 실패하면, GlobalExceptionHandler로
+            // @Valid는 이 매개변수에 대한 검증 절차를 실행할 것이고, 실패하면, GlobalExceptionHandler로 에러를 던질 것이야
+            // @RequestBody는 이 매개변수에 request.body 내용을 넣어줘
             @Valid @RequestBody CreateUserRequest request
     ) {
         try {
@@ -43,14 +48,14 @@ public class UserController {
             // 서비스는 생성이 끝난 결과 (생성 '된' User  객체)를 리턴하게 만들것임
             User user = userService.createUser(request);
 
-            return ResponseEntity.status(HttpStatus.CREATED)
+            return ResponseEntity.status(HttpStatus.CREATED) // 201
                     .body(Map.of(
                             "message", "성공적으로 회원가입 되었습니다.",
                             "data", UserResponse.from(user)
                     ));
         } catch (RuntimeException e) {
             if (e.getMessage().equals("ALREADY_EXISTS_EMAIL"))
-                return ResponseEntity.status((HttpStatus.CONFLICT))
+                return ResponseEntity.status((HttpStatus.CONFLICT))  // 409
                         .body(Map.of(
                                 "message", "이미 가입된 메일입니다."
                         ));
@@ -59,7 +64,7 @@ public class UserController {
                         .body(Map.of(
                                 "message", "이미 사용중인 닉네임입니다."
                         ));
-            return ResponseEntity.status((HttpStatus.INTERNAL_SERVER_ERROR))
+            return ResponseEntity.status((HttpStatus.INTERNAL_SERVER_ERROR))  // 500
                     .body(Map.of(
                             "message", "서버 에러가 발생되었습니다."
                     ));
@@ -76,7 +81,27 @@ public class UserController {
            User user = userService.login(request);
 
            //2. 토큰생성 해서 response 전달
-       } catch () {
+           String token = jwtUtil.generateToken(user.getId());
+
+           // ResponseEntity.status(코드값).body(Map.of(어쩌구, 저쩌구)) 는
+           // ResponseEntity.ok(Map.of(어쩌구, 저쩌구)) 로 쓸 수 있음
+           return ResponseEntity.ok(Map.of(
+                   "message", "로그인에 성공했습니다.",
+                   "data", Map.of(
+                           "user", UserResponse.from(user), // 변환에서 보내는 것임
+                           "token", token
+                   )
+           ));
+
+       } catch (RuntimeException e) {
+           if (e.getMessage().equals("INVALID_CREDENTIALS")) {
+               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                       "message", "아이디 또는 비밀번호가 일치하지 않습니다."
+               ));
+               return ResponseEntity.status(500).body(Map.of(
+                       "message", "서버에러"
+               ))
+           }
 
        }
     }
