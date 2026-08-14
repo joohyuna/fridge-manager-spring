@@ -1,4 +1,4 @@
-package com.lineacademy.fridgemanagerspring.dto.user;
+package com.lineacademy.fridgemanagerspring.dto.user.request;
 
 
 import jakarta.validation.constraints.Email;
