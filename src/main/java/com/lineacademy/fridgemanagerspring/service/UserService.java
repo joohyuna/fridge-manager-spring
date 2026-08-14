@@ -5,6 +5,7 @@ import com.lineacademy.fridgemanagerspring.domain.user.User;
 import com.lineacademy.fridgemanagerspring.dto.user.request.LoginRequest;
 import com.lineacademy.fridgemanagerspring.dto.user.request.CreateUserRequest;
 import com.lineacademy.fridgemanagerspring.dto.user.request.UpdateUserRequest;
+import com.lineacademy.fridgemanagerspring.dto.user.request.WithdrawUserRequest;
 import com.lineacademy.fridgemanagerspring.repository.FridgeRepository;
 import com.lineacademy.fridgemanagerspring.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -122,4 +123,19 @@ public class UserService {
         // 자동으로 디비믜 값도 업데이트 함 => Dirty Check
     }
 
+    public void withdrawUser(Long userId, @Valid WithdrawUserRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("USER_NOT_FOUTD"));
+
+        if (user.getDeletedAt() != null) {
+            throw new RuntimeException("USER_NOT_FOUND");
+        }
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("INVALID_CREDENTIALS");
+        }
+
+        // 소프트삭제 -> deletedAt 시간ㅇ르 넣고 업데이트
+
+        user.markAsDeleted();
+    }
 }
