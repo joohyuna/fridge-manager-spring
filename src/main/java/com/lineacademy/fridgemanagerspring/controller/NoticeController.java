@@ -68,10 +68,12 @@ public class NoticeController {
         } catch (RuntimeException e) {
             if (e.getMessage().equals("NOT_FOUND_NOTICE")) {
                 return ResponseEntity.status(404).body(Map.of(
-                        "message", "해당공지사하을 찾을수 없습니다."
+                        "message", "해당 공지사항을 찾을 수 없습니다."
                 ));
             }
-
+            return ResponseEntity.status(500).body(Map.of(
+                    "message", "서버 에러가 발생되었습니다."
+            ));
         }
     }
 }
