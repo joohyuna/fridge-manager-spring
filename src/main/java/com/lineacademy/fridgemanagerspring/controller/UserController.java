@@ -100,7 +100,7 @@ public class UserController {
                ));
                return ResponseEntity.status(500).body(Map.of(
                        "message", "서버에러"
-               ))
+               ));
            }
 
        }
