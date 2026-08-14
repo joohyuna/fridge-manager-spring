@@ -29,7 +29,7 @@ public class BaseTimeEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt; // 참조자료형이라는 뜻 LocalDateTime 기본적으로 null 이 포함 되어져 있다
 
     // deletedAt처럼, soft delete를 하기 위한 칼럼은 어노테이션이 없음. 수동 메서드를 구현해줬음
