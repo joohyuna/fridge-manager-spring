@@ -9,10 +9,7 @@ import com.lineacademy.fridgemanagerspring.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -56,5 +53,25 @@ public class NoticeController {
                     "message", "공지사항 목록 조회 중 서버 에러가 발생되었습니다."
             ));
        }
+    }
+
+    @GetMapping("/{noticeId}")
+    public ResponseEntity<Map<String, Object>> getNoticeById(
+           @PathVariable Long noticeId
+    ) {
+        try {
+            Notice notice = noticeService.getNoticeById(noticeId);
+            return ResponseEntity.ok(Map.of(
+                    "message", "공지사항 조회성공",
+                    "data", NoticeResponse.from(notice)
+            ));
+        } catch (RuntimeException e) {
+            if (e.getMessage().equals("NOT_FOUND_NOTICE")) {
+                return ResponseEntity.status(404).body(Map.of(
+                        "message", "해당공지사하을 찾을수 없습니다."
+                ));
+            }
+
+        }
     }
 }

@@ -19,4 +19,9 @@ public class NoticeService {
         Pageable pageable = PageRequest.of(page -1, size);
         return noticeRepository.findAllByOrderByIdDesc(pageable);
     }
+
+    public Notice getNoticeById(Long noticeId) {
+        return noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new RuntimeException("NOT_FOUND_NOTICE"));
+    }
 }
